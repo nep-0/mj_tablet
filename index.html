@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Riichi Mahjong Scorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Top Bar: Game Info -->
+    <header class="game-info">
+        <div class="info-item">
+            <span>Riichi Sticks 🀄</span>
+            <span id="pot-sticks" class="highlight">0</span>
+        </div>
+        <div class="info-item">
+            <span>Honba 🎴</span>
+            <span id="honba-count" class="highlight">0</span>
+        </div>
+        <button class="btn-reset" onclick="resetGame()">Reset Game</button>
+    </header>
+
+    <!-- Players Grid -->
+    <div class="players-grid">
+        <!-- Player 1 -->
+        <div class="player-card" id="p0">
+            <div class="player-header">
+                <span class="wind" id="wind-0">East</span>
+                <input type="text" class="player-name" value="Player 1">
+            </div>
+            <div class="player-score" id="score-0">25000</div>
+            <div class="player-actions">
+                <button class="btn-riichi" onclick="declareRiichi(0)">Riichi</button>
+            </div>
+        </div>
+
+        <!-- Player 2 -->
+        <div class="player-card" id="p1">
+            <div class="player-header">
+                <span class="wind" id="wind-1">South</span>
+                <input type="text" class="player-name" value="Player 2">
+            </div>
+            <div class="player-score" id="score-1">25000</div>
+            <div class="player-actions">
+                <button class="btn-riichi" onclick="declareRiichi(1)">Riichi</button>
+            </div>
+        </div>
+
+        <!-- Player 3 -->
+        <div class="player-card" id="p2">
+            <div class="player-header">
+                <span class="wind" id="wind-2">West</span>
+                <input type="text" class="player-name" value="Player 3">
+            </div>
+            <div class="player-score" id="score-2">25000</div>
+            <div class="player-actions">
+                <button class="btn-riichi" onclick="declareRiichi(2)">Riichi</button>
+            </div>
+        </div>
+
+        <!-- Player 4 -->
+        <div class="player-card" id="p3">
+            <div class="player-header">
+                <span class="wind" id="wind-3">North</span>
+                <input type="text" class="player-name" value="Player 4">
+            </div>
+            <div class="player-score" id="score-3">25000</div>
+            <div class="player-actions">
+                <button class="btn-riichi" onclick="declareRiichi(3)">Riichi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Action Bar -->
+    <footer class="action-bar">
+        <button class="btn-action btn-win" onclick="openWinModal()">Win (Agari)</button>
+        <button class="btn-action btn-draw" onclick="openDrawModal()">Draw (Ryuukyoku)</button>
+    </footer>
+</div>
+
+<!-- Win Modal -->
+<div id="win-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Record Win</h2>
+        
+        <div class="section">
+            <label>Who Won?</label>
+            <div class="toggle-group" id="winner-select">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Win Type</label>
+            <div class="toggle-group">
+                <button class="toggle-btn active" onclick="setWinType('ron')" id="btn-ron">Ron</button>
+                <button class="toggle-btn" onclick="setWinType('tsumo')" id="btn-tsumo">Tsumo</button>
+            </div>
+        </div>
+
+        <div class="section" id="loser-section">
+            <label>Who Dealt In? (Loser)</label>
+            <div class="toggle-group" id="loser-select">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Points (Han/Fu or Limit)</label>
+            <div class="points-grid">
+                <button onclick="setPoints(1000)">1000</button>
+                <button onclick="setPoints(1500)">1500</button>
+                <button onclick="setPoints(2000)">2000</button>
+                <button onclick="setPoints(3900)">3900</button>
+                <button onclick="setPoints(5800)">5800</button>
+                <button onclick="setPoints(7700)">7700</button>
+                <button onclick="setPoints(8000)" class="limit-btn">Mangan</button>
+                <button onclick="setPoints(12000)" class="limit-btn">Haneman</button>
+                <button onclick="setPoints(18000)" class="limit-btn">Baiman</button>
+                <button onclick="setPoints(24000)" class="limit-btn">Sanbaiman</button>
+                <button onclick="setPoints(32000)" class="limit-btn">Yakuman</button>
+            </div>
+            <div class="custom-input">
+                <label>Custom:</label>
+                <input type="number" id="custom-points" placeholder="0">
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+            <button class="btn-confirm" onclick="submitWin()">Confirm Win</button>
+        </div>
+    </div>
+</div>
+
+<!-- Draw Modal -->
+<div id="draw-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Draw (Ryuukyoku)</h2>
+        <p>Select players who are <strong>Tenpai</strong>:</p>
+        
+        <div class="tenpai-selection" id="tenpai-select">
+            <!-- Checkboxes generated by JS -->
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+            <button class="btn-confirm" onclick="submitDraw()">Confirm Draw</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
