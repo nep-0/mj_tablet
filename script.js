@@ -4,7 +4,19 @@ let playersRiichi = [false, false, false, false];
 let riichiSticks = 0;
 let honba = 0;
 let dealerIndex = 0; // 0=East, 1=South, etc.
+
+// Detect Browser Language
 let currentLang = 'en';
+try {
+    const browserLang = navigator.language || navigator.userLanguage;
+    if (browserLang.startsWith('ja')) {
+        currentLang = 'ja';
+    } else if (browserLang.startsWith('zh')) {
+        currentLang = 'zh';
+    }
+} catch (e) {
+    console.warn("Language detection failed, defaulting to English");
+}
 
 const TRANSLATIONS = {
     en: {
@@ -113,8 +125,8 @@ const TRANSLATIONS = {
         ron: "荣和",
         tsumo: "自摸",
         whoWon: "和牌者",
-        whoDealt: "放炮者",
-        handValue: "番・符",
+        whoDealt: "放铳者",
+        handValue: "点数计算",
         han: "番",
         fu: "符",
         score: "点数:",
@@ -132,7 +144,7 @@ const TRANSLATIONS = {
             riichiNotEnough: "点数不足！",
             riichiAlready: "玩家已立直！",
             selectWinner: "请选择和牌者",
-            selectLoser: "请选择放炮者",
+            selectLoser: "请选择放铳者",
             shuffleConfirm: "随机分配座位？"
         },
         hanOptions: {
@@ -774,6 +786,10 @@ function changeLanguage(lang) {
 function updateLanguageUI() {
     const t = TRANSLATIONS[currentLang];
     
+    // Sync Dropdown
+    const langSelect = document.getElementById('lang-select');
+    if(langSelect) langSelect.value = currentLang;
+
     // Update elements with data-i18n attribute
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
