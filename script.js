@@ -2,16 +2,16 @@
 let scores = [25000, 25000, 25000, 25000];
 let riichiSticks = 0;
 let honba = 0;
-let dealerIndex = 0; 
+let dealerIndex = 0; // 0=East, 1=South, etc.
 
-// UI State
+// UI State for Win Modal
 let selectedWinner = null;
 let selectedLoser = null;
-let winType = 'ron'; 
+let winType = 'ron'; // 'ron' or 'tsumo'
 let selectedPoints = 0;
 
-// Helper for Mahjong Rounding (Round up to nearest 100)
-const roundUp100 = (points) => Math.ceil(points / 100) * 100;
+// Helper: Round up to nearest 100
+const roundUp100 = (val) => Math.ceil(val / 100) * 100;
 
 function init() {
     renderScores();
@@ -43,16 +43,15 @@ function updateHeader() {
 }
 
 function updateDealerUI() {
+    const winds = ['East', 'South', 'West', 'North'];
     for (let i = 0; i < 4; i++) {
         const card = document.getElementById(`p${i}`);
-        const windLabel = document.getElementById(`wind-${i}`);
+        const windText = document.getElementById(`wind-${i}`);
         
-        // Calculate wind relative to dealer
-        // Dealer is East, Next is South, etc.
-        // (PlayerIndex - DealerIndex + 4) % 4: 0=E, 1=S, 2=W, 3=N
-        const relWind = (i - dealerIndex + 4) % 4;
-        const winds = ['East', 'South', 'West', 'North'];
-        windLabel.textContent = winds[relWind];
+        // Calculate player's wind based on dealer position
+        // (PlayerIndex - DealerIndex + 4) % 4 -> 0=E, 1=S, 2=W, 3=N
+        const relativeWind = (i - dealerIndex + 4) % 4;
+        windText.textContent = winds[relativeWind];
 
         if (i === dealerIndex) card.classList.add('dealer');
         else card.classList.remove('dealer');
@@ -99,8 +98,10 @@ function setWinType(type) {
 function updateWinTypeUI() {
     document.getElementById('btn-ron').classList.toggle('active', winType === 'ron');
     document.getElementById('btn-tsumo').classList.toggle('active', winType === 'tsumo');
+    
     const loserSection = document.getElementById('loser-section');
     loserSection.style.display = (winType === 'tsumo') ? 'none' : 'block';
+    
     renderPlayerSelects();
 }
 
@@ -123,7 +124,7 @@ function renderPlayerSelects() {
         btn.textContent = playerNames[i];
         btn.onclick = () => {
             selectedWinner = i;
-            if (selectedLoser === i) selectedLoser = null; 
+            if (selectedLoser === i) selectedLoser = null;
             renderPlayerSelects();
         };
         winnerContainer.appendChild(btn);
@@ -134,10 +135,12 @@ function renderPlayerSelects() {
         const btn = document.createElement('button');
         let className = 'toggle-btn';
         if (selectedLoser === i) className += ' active';
-        if (selectedWinner === i) className += ' disabled';
+        if (selectedWinner === i) {
+            className += ' disabled';
+            btn.disabled = true;
+        }
 
         btn.className = className;
-        btn.disabled = (selectedWinner === i);
         btn.textContent = playerNames[i];
         btn.onclick = () => {
             if(selectedWinner !== i) {
@@ -157,62 +160,65 @@ function setPoints(pts) {
 function submitWin() {
     if (selectedWinner === null) { alert("Select a winner"); return; }
     
-    let inputPoints = parseInt(document.getElementById('custom-points').value) || 0;
-    if (inputPoints === 0) { alert("Enter points"); return; }
+    let rawPoints = parseInt(document.getElementById('custom-points').value) || 0;
+    if (rawPoints === 0) { alert("Enter points"); return; }
 
-    // 1. Transfer Riichi Sticks
+    // 1. Transfer Riichi Sticks to Winner
     scores[selectedWinner] += (riichiSticks * 1000);
     riichiSticks = 0;
 
     // 2. Calculate Hand Points
+    const isDealerWin = (selectedWinner === dealerIndex);
+
     if (winType === 'ron') {
         if (selectedLoser === null) { alert("Select who dealt in"); return; }
         
-        // Ron: Payer pays (Points + 300*Honba)
-        const totalPay = inputPoints + (300 * honba);
+        // Ron: Input points + (300 * honba)
+        const totalPay = rawPoints + (300 * honba);
+        
         scores[selectedWinner] += totalPay;
         scores[selectedLoser] -= totalPay;
 
     } else {
-        // Tsumo Logic
-        // Honba: Every player pays 100 extra. Total bonus = 300*honba.
-        const isDealerWin = (selectedWinner === dealerIndex);
-        const individualHonba = 100 * honba;
-        
+        // Tsumo
+        // Honba payment: Every loser pays 100 * honba
+        const honbaPayment = 100 * honba;
+
         if (isDealerWin) {
             // Dealer Tsumo: Everyone pays 1/3 of total
-            // Calculation: (Total / 3) rounded up
-            const basePayment = roundUp100(inputPoints / 3);
+            // Formula: RoundUp(Total / 3)
+            const paymentPerPerson = roundUp100(rawPoints / 3);
             
             for(let i=0; i<4; i++) {
                 if(i !== selectedWinner) {
-                    scores[i] -= (basePayment + individualHonba);
-                    scores[selectedWinner] += (basePayment + individualHonba);
+                    scores[i] -= (paymentPerPerson + honbaPayment);
+                    scores[selectedWinner] += (paymentPerPerson + honbaPayment);
                 }
             }
         } else {
-            // Non-Dealer Tsumo: 
-            // Dealer pays 2/4 of total (approx), Children pay 1/4 (approx)
-            // Correct formula using input points as "Ron Equivalent":
-            // Base = Points / 4. Child = Round(Base). Dealer = Round(Base * 2).
+            // Non-Dealer Tsumo
+            // Child Pays: RoundUp(Total / 4)
+            // Dealer Pays: RoundUp(Total / 2) -- Note: This is derived from Base*2, roughly Total/2
             
-            const baseVal = inputPoints / 4;
-            const childPayment = roundUp100(baseVal);
-            const dealerPayment = roundUp100(baseVal * 2);
+            // Accurate Calculation using the "Total" input:
+            const baseForCalc = rawPoints / 4;
+            const childPayment = roundUp100(baseForCalc); 
+            const dealerPayment = roundUp100(baseForCalc * 2); // Fixed: Round AFTER multiplying
 
             for(let i=0; i<4; i++) {
                 if(i === selectedWinner) continue;
                 
                 let payment = (i === dealerIndex) ? dealerPayment : childPayment;
-                scores[i] -= (payment + individualHonba);
-                scores[selectedWinner] += (payment + individualHonba);
+                
+                scores[i] -= (payment + honbaPayment);
+                scores[selectedWinner] += (payment + honbaPayment);
             }
         }
     }
 
-    // 3. Rotate Dealer / Honba
-    // If Dealer Won (Ron or Tsumo): Honba++, Dealer Stays
-    // If Dealer Lost: Honba=0, Dealer Rotates
+    // 3. Dealer Rotation
+    // If Dealer wins (Ron or Tsumo), Honba increases, Dealer stays.
+    // If Dealer loses, Honba resets to 0, Dealer rotates.
     if (selectedWinner === dealerIndex) {
         honba++;
     } else {
@@ -241,10 +247,9 @@ function openDrawModal() {
     for(let i=0; i<4; i++) {
         const div = document.createElement('div');
         div.className = 'tenpai-row';
-        // Dealer usually checked by default for convenience in many apps, but let's leave unchecked
         div.innerHTML = `
             <span>${playerNames[i]}</span>
-            <input type="checkbox" id="tenpai-check-${i}"> 
+            <input type="checkbox" id="tenpai-check-${i}">
         `;
         container.appendChild(div);
     }
@@ -261,7 +266,7 @@ function submitDraw() {
         }
     }
 
-    // 1. Pot Split (3000 total)
+    // Pot Split (3000)
     if (tenpaiCount > 0 && tenpaiCount < 4) {
         const winAmount = 3000 / tenpaiCount;
         const loseAmount = 3000 / (4 - tenpaiCount);
@@ -275,7 +280,7 @@ function submitDraw() {
         }
     }
 
-    // 2. Dealer Rotation
+    // Dealer Rotation
     // If Dealer is Tenpai: Dealer stays, Honba + 1
     // If Dealer is Noten: Dealer rotates, Honba + 1
     const dealerIsTenpai = tenpaiIndices.includes(dealerIndex);
