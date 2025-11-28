@@ -4,6 +4,7 @@ let playersRiichi = [false, false, false, false];
 let riichiSticks = 0;
 let honba = 0;
 let dealerIndex = 0; // 0=East, 1=South, etc.
+let prevalentWind = 0; // 0=East, 1=South, etc.
 
 // Detect Browser Language
 let currentLang = 'en';
@@ -46,6 +47,7 @@ const TRANSLATIONS = {
         drawTitle: "Draw (Ryuukyoku)",
         tenpaiSelect: "Select players who are <strong>Tenpai</strong>:",
         player: "Player",
+        roundSuffix: "",
         winds: ["East", "South", "West", "North"],
         alerts: {
             resetConfirm: "Reset all scores to 25000?",
@@ -95,6 +97,7 @@ const TRANSLATIONS = {
         drawTitle: "流局",
         tenpaiSelect: "<strong>聴牌</strong>しているプレイヤーを選択:",
         player: "プレイヤー",
+        roundSuffix: "局",
         winds: ["東", "南", "西", "北"],
         alerts: {
             resetConfirm: "点数を25000点にリセットしますか？",
@@ -144,6 +147,7 @@ const TRANSLATIONS = {
         drawTitle: "流局",
         tenpaiSelect: "选择<strong>听牌</strong>的玩家:",
         player: "玩家",
+        roundSuffix: "局",
         winds: ["东", "南", "西", "北"],
         alerts: {
             resetConfirm: "重置所有分数为25000？",
@@ -787,6 +791,7 @@ function changeLanguage(lang) {
     currentLang = lang;
     updateLanguageUI();
     updateDealerUI(); // Update winds
+    updateHeader(); // Update round display
 }
 
 function updateLanguageUI() {
@@ -905,6 +910,7 @@ function resetGame() {
     riichiSticks = 0;
     honba = 0;
     dealerIndex = 0;
+    prevalentWind = 0;
     init();
 }
 
@@ -934,6 +940,20 @@ function renderScores() {
 function updateHeader() {
     document.getElementById('pot-sticks').textContent = riichiSticks;
     document.getElementById('honba-count').textContent = honba;
+
+    const t = TRANSLATIONS[currentLang];
+    const windName = t.winds[prevalentWind];
+    const roundNum = dealerIndex + 1;
+    
+    let roundText = "";
+    if (currentLang === 'en') {
+        roundText = `${windName} ${roundNum}`;
+    } else {
+        roundText = `${windName}${roundNum}${t.roundSuffix}`;
+    }
+    
+    const roundEl = document.getElementById('round-display');
+    if(roundEl) roundEl.textContent = roundText;
 }
 
 function updateDealerUI() {
@@ -1171,7 +1191,11 @@ function submitWin() {
         honba++;
     } else {
         honba = 0;
-        dealerIndex = (dealerIndex + 1) % 4;
+        dealerIndex++;
+        if (dealerIndex > 3) {
+            dealerIndex = 0;
+            prevalentWind = (prevalentWind + 1) % 4;
+        }
     }
 
     // Reset Riichi status for next round
@@ -1239,7 +1263,11 @@ function submitDraw() {
     honba++; 
     
     if (!dealerIsTenpai) {
-        dealerIndex = (dealerIndex + 1) % 4;
+        dealerIndex++;
+        if (dealerIndex > 3) {
+            dealerIndex = 0;
+            prevalentWind = (prevalentWind + 1) % 4;
+        }
     }
 
     // Reset Riichi status for next round
