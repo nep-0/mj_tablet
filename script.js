@@ -1,5 +1,6 @@
 // Game State
 let scores = [25000, 25000, 25000, 25000];
+let playersRiichi = [false, false, false, false];
 let riichiSticks = 0;
 let honba = 0;
 let dealerIndex = 0; // 0=East, 1=South, etc.
@@ -620,6 +621,7 @@ function init() {
 function resetGame() {
     if(!confirm("Reset all scores to 25000?")) return;
     scores = [25000, 25000, 25000, 25000];
+    playersRiichi = [false, false, false, false];
     riichiSticks = 0;
     honba = 0;
     dealerIndex = 0;
@@ -632,6 +634,20 @@ function renderScores() {
         const el = document.getElementById(`score-${i}`);
         if(scores[i] < 0) el.style.color = '#ff6b6b';
         else el.style.color = 'white';
+
+        // Update Riichi Button State
+        const btn = document.querySelector(`#p${i} .btn-riichi`);
+        if (playersRiichi[i]) {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('disabled');
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
     }
 }
 
@@ -659,11 +675,16 @@ function updateDealerUI() {
 // --- Actions ---
 
 function declareRiichi(playerIdx) {
+    if (playersRiichi[playerIdx]) {
+        alert("Player has already declared Riichi!");
+        return;
+    }
     if (scores[playerIdx] < 1000) {
         alert("Not enough points for Riichi!");
         return;
     }
     scores[playerIdx] -= 1000;
+    playersRiichi[playerIdx] = true;
     riichiSticks++;
     renderScores();
     updateHeader();
@@ -873,6 +894,9 @@ function submitWin() {
         dealerIndex = (dealerIndex + 1) % 4;
     }
 
+    // Reset Riichi status for next round
+    playersRiichi = [false, false, false, false];
+
     renderScores();
     updateHeader();
     updateDealerUI();
@@ -937,6 +961,9 @@ function submitDraw() {
     if (!dealerIsTenpai) {
         dealerIndex = (dealerIndex + 1) % 4;
     }
+
+    // Reset Riichi status for next round
+    playersRiichi = [false, false, false, false];
 
     renderScores();
     updateHeader();
