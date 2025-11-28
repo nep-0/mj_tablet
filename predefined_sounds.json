@@ -5,18 +5,18 @@
         "tsumo": ""
     },
     "一姬": {
-        "riichi": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yiji/act_rich.mp3",
-        "ron": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yiji/act_ron.mp3",
-        "tsumo": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yiji/act_tumo.mp3"
+        "riichi": "https://chen310.github.io/tenhou-se/character/yiji/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/yiji/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/yiji/act_tumo.mp3"
     },
     "约瑟夫": {
-        "riichi": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yuesefu/act_rich.mp3",
-        "ron": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yuesefu/act_ron.mp3",
-        "tsumo": "https://gitee.com/nep-0/tenhou-se/raw/master/character/yuesefu/act_tumo.mp3"
+        "riichi": "https://chen310.github.io/tenhou-se/character/yuesefu/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/yuesefu/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/yuesefu/act_tumo.mp3"
     },
     "汪次郎": {
-        "riichi": "https://gitee.com/nep-0/tenhou-se/raw/master/character/wangcilang/act_rich.mp3",
-        "ron": "https://gitee.com/nep-0/tenhou-se/raw/master/character/wangcilang/act_ron.mp3",
-        "tsumo": "https://gitee.com/nep-0/tenhou-se/raw/master/character/wangcilang/act_tumo.mp3"
+        "riichi": "https://chen310.github.io/tenhou-se/character/wangcilang/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/wangcilang/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/wangcilang/act_tumo.mp3"
     }
 }
