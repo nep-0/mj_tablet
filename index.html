@@ -97,24 +97,42 @@
         </div>
 
         <div class="section">
-            <label>Points (Han/Fu or Limit)</label>
-            <div class="points-grid">
-                <button onclick="setPoints(1000)">1000</button>
-                <button onclick="setPoints(1500)">1500</button>
-                <button onclick="setPoints(2000)">2000</button>
-                <button onclick="setPoints(3900)">3900</button>
-                <button onclick="setPoints(5200)">5200</button>
-                <button onclick="setPoints(5800)">5800</button>
-                <button onclick="setPoints(7700)">7700</button>
-                <button onclick="setPoints(8000)" class="limit-btn">Mangan</button>
-                <button onclick="setPoints(12000)" class="limit-btn">Haneman</button>
-                <button onclick="setPoints(18000)" class="limit-btn">Baiman</button>
-                <button onclick="setPoints(24000)" class="limit-btn">Sanbaiman</button>
-                <button onclick="setPoints(32000)" class="limit-btn">Yakuman</button>
+            <label>Hand Value</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <label for="han-select" style="display: block; margin-bottom: 5px;">Han</label>
+                    <select id="han-select" onchange="updateCalculatedScore()" style="width: 100%; padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555;">
+                        <option value="1">1 Han</option>
+                        <option value="2">2 Han</option>
+                        <option value="3">3 Han</option>
+                        <option value="4">4 Han</option>
+                        <option value="5">5 Han (Mangan)</option>
+                        <option value="6">6-7 Han (Haneman)</option>
+                        <option value="8">8-10 Han (Baiman)</option>
+                        <option value="11">11-12 Han (Sanbaiman)</option>
+                        <option value="13">13+ Han (Yakuman)</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="fu-select" style="display: block; margin-bottom: 5px;">Fu</label>
+                    <select id="fu-select" onchange="updateCalculatedScore()" style="width: 100%; padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555;">
+                        <option value="20">20 Fu</option>
+                        <option value="25">25 Fu (7 Pairs)</option>
+                        <option value="30">30 Fu</option>
+                        <option value="40">40 Fu</option>
+                        <option value="50">50 Fu</option>
+                        <option value="60">60 Fu</option>
+                        <option value="70">70 Fu</option>
+                        <option value="80">80 Fu</option>
+                        <option value="90">90 Fu</option>
+                        <option value="100">100 Fu</option>
+                        <option value="110">110 Fu</option>
+                    </select>
+                </div>
             </div>
-            <div class="custom-input">
-                <label>Custom:</label>
-                <input type="number" id="custom-points" placeholder="0">
+            <div class="calculated-score" style="text-align: center; margin-top: 15px; background: #2d2d2d; padding: 10px; border-radius: 8px;">
+                <div id="score-breakdown" style="font-size: 1.1rem; color: #aaa; margin-bottom: 4px; min-height: 1.5em; font-family: monospace;"></div>
+                <div id="score-total" style="font-size: 2.5rem; font-weight: bold; color: #ffc107; line-height: 1;">0</div>
             </div>
         </div>
 
