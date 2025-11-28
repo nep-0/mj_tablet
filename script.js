@@ -20,8 +20,9 @@ try {
 
 const TRANSLATIONS = {
     en: {
-        riichiSticks: "Riichi Sticks 🀄",
-        honba: "Honba 🎴",
+        title: "Riichi Mahjong Scorer",
+        riichiSticks: "Riichi Sticks",
+        honba: "Honba",
         reset: "Reset Game",
         rotate: "Rotate ↻",
         shuffle: "Shuffle ⤮",
@@ -67,8 +68,9 @@ const TRANSLATIONS = {
         }
     },
     ja: {
-        riichiSticks: "立直棒 🀄",
-        honba: "本場 🎴",
+        title: "リーチ麻雀点数計算",
+        riichiSticks: "立直棒",
+        honba: "本場",
         reset: "リセット",
         rotate: "席替え(回転) ↻",
         shuffle: "席替え(乱数) ⤮",
@@ -114,8 +116,9 @@ const TRANSLATIONS = {
         }
     },
     zh: {
-        riichiSticks: "立直棒 🀄",
-        honba: "本场 🎴",
+        title: "立直麻将计分器",
+        riichiSticks: "立直棒",
+        honba: "本场",
         reset: "重置",
         rotate: "换位(旋转) ↻",
         shuffle: "换位(随机) ⤮",
@@ -786,6 +789,9 @@ function changeLanguage(lang) {
 function updateLanguageUI() {
     const t = TRANSLATIONS[currentLang];
     
+    // Update Title
+    document.title = t.title;
+
     // Sync Dropdown
     const langSelect = document.getElementById('lang-select');
     if(langSelect) langSelect.value = currentLang;
