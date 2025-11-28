@@ -19,7 +19,11 @@
             <span>Honba 🎴</span>
             <span id="honba-count" class="highlight">0</span>
         </div>
-        <button class="btn-reset" onclick="resetGame()">Reset Game</button>
+        <div style="display: flex; gap: 5px;">
+            <button class="btn-reset" onclick="rotateSeats()">Rotate ↻</button>
+            <button class="btn-reset" onclick="shuffleSeats()">Shuffle ⤮</button>
+            <button class="btn-reset" onclick="resetGame()">Reset Game</button>
+        </div>
     </header>
 
     <!-- Players Grid -->
@@ -44,16 +48,6 @@
                 <button class="btn-riichi" onclick="declareRiichi(1)">Riichi</button>
             </div>
         </div>
-        <div class="player-card" id="p2">
-            <div class="player-header">
-                <span class="wind" id="wind-2">West</span>
-                <input type="text" class="player-name" value="Player 3">
-            </div>
-            <div class="player-score" id="score-2">25000</div>
-            <div class="player-actions">
-                <button class="btn-riichi" onclick="declareRiichi(2)">Riichi</button>
-            </div>
-        </div>
         <div class="player-card" id="p3">
             <div class="player-header">
                 <span class="wind" id="wind-3">North</span>
@@ -62,6 +56,16 @@
             <div class="player-score" id="score-3">25000</div>
             <div class="player-actions">
                 <button class="btn-riichi" onclick="declareRiichi(3)">Riichi</button>
+            </div>
+        </div>
+        <div class="player-card" id="p2">
+            <div class="player-header">
+                <span class="wind" id="wind-2">West</span>
+                <input type="text" class="player-name" value="Player 3">
+            </div>
+            <div class="player-score" id="score-2">25000</div>
+            <div class="player-actions">
+                <button class="btn-riichi" onclick="declareRiichi(2)">Riichi</button>
             </div>
         </div>
     </div>

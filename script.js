@@ -613,9 +613,64 @@ const SCORE_TABLES = {
 };
 
 function init() {
+    initPlayerNames();
     renderScores();
     updateDealerUI();
     updateHeader();
+}
+
+function initPlayerNames() {
+    for(let i=0; i<4; i++) {
+        const input = document.querySelector(`#p${i} .player-name`);
+        // Load saved name
+        const savedName = localStorage.getItem(`player-name-${i}`);
+        if (savedName) {
+            input.value = savedName;
+        }
+
+        // Save on change
+        input.addEventListener('change', (e) => {
+            localStorage.setItem(`player-name-${i}`, e.target.value);
+        });
+    }
+}
+
+function rotateSeats() {
+    const names = [];
+    for(let i=0; i<4; i++) {
+        names.push(document.querySelector(`#p${i} .player-name`).value);
+    }
+    
+    // Rotate: P3 -> P0, P0 -> P1, etc.
+    const last = names.pop();
+    names.unshift(last);
+    
+    for(let i=0; i<4; i++) {
+        const input = document.querySelector(`#p${i} .player-name`);
+        input.value = names[i];
+        localStorage.setItem(`player-name-${i}`, names[i]);
+    }
+}
+
+function shuffleSeats() {
+    if(!confirm("Shuffle player seats?")) return;
+    
+    const names = [];
+    for(let i=0; i<4; i++) {
+        names.push(document.querySelector(`#p${i} .player-name`).value);
+    }
+    
+    // Fisher-Yates Shuffle
+    for (let i = names.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [names[i], names[j]] = [names[j], names[i]];
+    }
+    
+    for(let i=0; i<4; i++) {
+        const input = document.querySelector(`#p${i} .player-name`);
+        input.value = names[i];
+        localStorage.setItem(`player-name-${i}`, names[i]);
+    }
 }
 
 function resetGame() {
