@@ -202,6 +202,12 @@ label {
     background: var(--accent-blue);
     border-color: var(--accent-blue);
 }
+.toggle-btn.disabled {
+    background: #222;
+    border-color: #222;
+    color: #666;
+    cursor: not-allowed;
+}
 
 .points-grid {
     display: grid;
