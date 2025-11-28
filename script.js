@@ -6,6 +6,19 @@ let honba = 0;
 let dealerIndex = 0; // 0=East, 1=South, etc.
 let prevalentWind = 0; // 0=East, 1=South, etc.
 
+// Sound State
+let soundSettings = {
+    enabled: false,
+    players: {
+        0: { riichi: "", ron: "", tsumo: "" },
+        1: { riichi: "", ron: "", tsumo: "" },
+        2: { riichi: "", ron: "", tsumo: "" },
+        3: { riichi: "", ron: "", tsumo: "" }
+    }
+};
+
+let PREDEFINED_SOUNDS = {};
+
 // Detect Browser Language
 let currentLang = 'en';
 try {
@@ -34,16 +47,20 @@ let SCORE_TABLES = {};
 
 async function init() {
     try {
-        const [translationsResponse, scoreTablesResponse] = await Promise.all([
+        initSoundSettings();
+        const [translationsResponse, scoreTablesResponse, predefinedSoundsResponse] = await Promise.all([
             fetch('translations.json'),
-            fetch('score_tables.json')
+            fetch('score_tables.json'),
+            fetch('predefined_sounds.json')
         ]);
 
         if (!translationsResponse.ok) throw new Error('Failed to load translations');
         if (!scoreTablesResponse.ok) throw new Error('Failed to load score tables');
+        if (!predefinedSoundsResponse.ok) throw new Error('Failed to load predefined sounds');
 
         TRANSLATIONS = await translationsResponse.json();
         SCORE_TABLES = await scoreTablesResponse.json();
+        PREDEFINED_SOUNDS = await predefinedSoundsResponse.json();
 
         initPlayerNames();
         updateLanguageUI();
@@ -144,40 +161,52 @@ function initPlayerNames() {
 
 function rotateSeats() {
     const names = [];
+    const sounds = [];
     for(let i=0; i<4; i++) {
         names.push(document.querySelector(`#p${i} .player-name`).value);
+        sounds.push(soundSettings.players[i]);
     }
     
     // Rotate: P3 -> P0, P0 -> P1, etc.
     const last = names.pop();
     names.unshift(last);
     
+    const lastSound = sounds.pop();
+    sounds.unshift(lastSound);
+    
     for(let i=0; i<4; i++) {
         const input = document.querySelector(`#p${i} .player-name`);
         input.value = names[i];
         localStorage.setItem(`player-name-${i}`, names[i]);
+        soundSettings.players[i] = sounds[i];
     }
+    localStorage.setItem('mj_sound_settings', JSON.stringify(soundSettings));
 }
 
 function shuffleSeats() {
     if(!confirm(TRANSLATIONS[currentLang].alerts.shuffleConfirm)) return;
     
-    const names = [];
+    const players = [];
     for(let i=0; i<4; i++) {
-        names.push(document.querySelector(`#p${i} .player-name`).value);
+        players.push({
+            name: document.querySelector(`#p${i} .player-name`).value,
+            sounds: soundSettings.players[i]
+        });
     }
     
     // Fisher-Yates Shuffle
-    for (let i = names.length - 1; i > 0; i--) {
+    for (let i = players.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [names[i], names[j]] = [names[j], names[i]];
+        [players[i], players[j]] = [players[j], players[i]];
     }
     
     for(let i=0; i<4; i++) {
         const input = document.querySelector(`#p${i} .player-name`);
-        input.value = names[i];
-        localStorage.setItem(`player-name-${i}`, names[i]);
+        input.value = players[i].name;
+        localStorage.setItem(`player-name-${i}`, players[i].name);
+        soundSettings.players[i] = players[i].sounds;
     }
+    localStorage.setItem('mj_sound_settings', JSON.stringify(soundSettings));
 }
 
 function resetGame() {
@@ -263,6 +292,7 @@ function declareRiichi(playerIdx) {
     scores[playerIdx] -= 1000;
     playersRiichi[playerIdx] = true;
     riichiSticks++;
+    playSound('riichi', playerIdx);
     renderScores();
     updateHeader();
 }
@@ -288,6 +318,7 @@ function openWinModal() {
 function closeModals() {
     document.getElementById('win-modal').classList.add('hidden');
     document.getElementById('draw-modal').classList.add('hidden');
+    document.getElementById('sound-modal').classList.add('hidden');
 }
 
 function setWinType(type) {
@@ -419,6 +450,7 @@ function submitWin() {
 
     if (winType === 'ron') {
         if (selectedLoser === null) { alert(TRANSLATIONS[currentLang].alerts.selectLoser); return; }
+        playSound('ron', selectedWinner);
         
         // Ron Payment
         let pointValue = 0;
@@ -435,6 +467,7 @@ function submitWin() {
 
     } else {
         // Tsumo
+        playSound('tsumo', selectedWinner);
         if (isDealerWin) {
             // Dealer Tsumo: Everyone pays same amount
             const paymentPerPerson = SCORE_TABLES.dealer_tsumo[han][fu];
@@ -554,6 +587,114 @@ function submitDraw() {
     updateHeader();
     updateDealerUI();
     closeModals();
+}
+
+// --- Sound System ---
+
+function initSoundSettings() {
+    const saved = localStorage.getItem('mj_sound_settings');
+    if (saved) {
+        try {
+            soundSettings = JSON.parse(saved);
+        } catch (e) {
+            console.error("Failed to parse sound settings", e);
+        }
+    }
+}
+
+function openSoundSettings() {
+    const modal = document.getElementById('sound-modal');
+    const container = document.getElementById('sound-players-container');
+    const enabledCheckbox = document.getElementById('sound-enabled');
+    
+    enabledCheckbox.checked = soundSettings.enabled;
+    container.innerHTML = '';
+
+    // Generate options once
+    let optionsHtml = `<option value="">-- ${TRANSLATIONS[currentLang].customUrl} --</option>`;
+    for (const key in PREDEFINED_SOUNDS) {
+        optionsHtml += `<option value="${key}">${key}</option>`;
+    }
+
+    // Player Inputs
+    for (let i = 0; i < 4; i++) {
+        const playerBlock = document.createElement('div');
+        playerBlock.className = 'sound-player-block';
+        
+        const playerName = document.querySelector(`#p${i} .player-name`).value || `${TRANSLATIONS[currentLang].player} ${i+1}`;
+        
+        playerBlock.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="sound-player-title" style="margin-bottom: 0;">${playerName}</div>
+                <select onchange="applyPredefinedSound(${i}, this.value)" style="padding: 4px; background: #222; color: white; border: 1px solid #555; border-radius: 4px; font-size: 0.9em;">
+                    ${optionsHtml}
+                </select>
+            </div>
+            ${createSoundInputRow(i, 'riichi', soundSettings.players[i].riichi)}
+            ${createSoundInputRow(i, 'ron', soundSettings.players[i].ron)}
+            ${createSoundInputRow(i, 'tsumo', soundSettings.players[i].tsumo)}
+        `;
+        container.appendChild(playerBlock);
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function createSoundInputRow(playerIdx, action, value) {
+    const label = TRANSLATIONS[currentLang][action] || action;
+    return `
+        <div class="sound-input-row">
+            <label>${label}</label>
+            <input type="text" id="sound-${playerIdx}-${action}" value="${value}" placeholder="https://...">
+            <button class="btn-preview" onclick="previewSoundInput('sound-${playerIdx}-${action}')">▶</button>
+        </div>
+    `;
+}
+
+function applyPredefinedSound(playerIdx, key) {
+    if (!key || !PREDEFINED_SOUNDS[key]) return;
+    const set = PREDEFINED_SOUNDS[key];
+    
+    document.getElementById(`sound-${playerIdx}-riichi`).value = set.riichi;
+    document.getElementById(`sound-${playerIdx}-ron`).value = set.ron;
+    document.getElementById(`sound-${playerIdx}-tsumo`).value = set.tsumo;
+}
+
+function previewSoundInput(inputId) {
+    const url = document.getElementById(inputId).value;
+    if (url) previewSound(url);
+}
+
+function previewSound(url) {
+    const audio = new Audio(url);
+    audio.play().catch(e => console.warn("Audio play failed", e));
+}
+
+function toggleSound(checked) {
+    // Just updates UI state, actual save happens on Save
+}
+
+function saveSoundSettings() {
+    soundSettings.enabled = document.getElementById('sound-enabled').checked;
+    
+    for (let i = 0; i < 4; i++) {
+        soundSettings.players[i].riichi = document.getElementById(`sound-${i}-riichi`).value;
+        soundSettings.players[i].ron = document.getElementById(`sound-${i}-ron`).value;
+        soundSettings.players[i].tsumo = document.getElementById(`sound-${i}-tsumo`).value;
+    }
+    
+    localStorage.setItem('mj_sound_settings', JSON.stringify(soundSettings));
+    closeModals();
+}
+
+function playSound(action, playerIdx) {
+    if (!soundSettings.enabled) return;
+    
+    const url = soundSettings.players[playerIdx]?.[action];
+    if (url) {
+        const audio = new Audio(url);
+        audio.play().catch(e => console.warn("Audio play failed", e));
+    }
 }
 
 init();

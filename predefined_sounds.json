@@ -1,0 +1,22 @@
+{
+    "EMPTY": {
+        "riichi": "",
+        "ron": "",
+        "tsumo": ""
+    },
+    "一姬": {
+        "riichi": "https://chen310.github.io/tenhou-se/character/yiji/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/yiji/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/yiji/act_tumo.mp3"
+    },
+    "约瑟夫": {
+        "riichi": "https://chen310.github.io/tenhou-se/character/yuesefu/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/yuesefu/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/yuesefu/act_tumo.mp3"
+    },
+    "汪次郎": {
+        "riichi": "https://chen310.github.io/tenhou-se/character/wangcilang/act_rich.mp3",
+        "ron": "https://chen310.github.io/tenhou-se/character/wangcilang/act_ron.mp3",
+        "tsumo": "https://chen310.github.io/tenhou-se/character/wangcilang/act_tumo.mp3"
+    }
+}
