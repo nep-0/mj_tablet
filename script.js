@@ -4,6 +4,151 @@ let playersRiichi = [false, false, false, false];
 let riichiSticks = 0;
 let honba = 0;
 let dealerIndex = 0; // 0=East, 1=South, etc.
+let currentLang = 'en';
+
+const TRANSLATIONS = {
+    en: {
+        riichiSticks: "Riichi Sticks 🀄",
+        honba: "Honba 🎴",
+        reset: "Reset Game",
+        rotate: "Rotate ↻",
+        shuffle: "Shuffle ⤮",
+        win: "Win (Agari)",
+        draw: "Draw (Ryuukyoku)",
+        riichi: "Riichi",
+        ron: "Ron",
+        tsumo: "Tsumo",
+        whoWon: "Who Won?",
+        whoDealt: "Who Dealt In?",
+        handValue: "Hand Value",
+        han: "Han",
+        fu: "Fu",
+        score: "Score:",
+        base: "Base:",
+        total: "Total:",
+        cancel: "Cancel",
+        confirmWin: "Confirm Win",
+        confirmDraw: "Confirm Draw",
+        drawTitle: "Draw (Ryuukyoku)",
+        tenpaiSelect: "Select players who are <strong>Tenpai</strong>:",
+        player: "Player",
+        winds: ["East", "South", "West", "North"],
+        alerts: {
+            resetConfirm: "Reset all scores to 25000?",
+            riichiNotEnough: "Not enough points for Riichi!",
+            riichiAlready: "Player has already declared Riichi!",
+            selectWinner: "Select a winner",
+            selectLoser: "Select who dealt in",
+            shuffleConfirm: "Shuffle player seats?"
+        },
+        hanOptions: {
+            1: "1 Han", 2: "2 Han", 3: "3 Han", 4: "4 Han",
+            5: "5 Han (Mangan)", 6: "6-7 Han (Haneman)",
+            8: "8-10 Han (Baiman)", 11: "11-12 Han (Sanbaiman)",
+            13: "13+ Han (Yakuman)"
+        },
+        fuOptions: {
+            20: "20 Fu", 25: "25 Fu (7 Pairs)", 30: "30 Fu",
+            40: "40 Fu", 50: "50 Fu", 60: "60 Fu",
+            70: "70 Fu", 80: "80 Fu", 90: "90 Fu",
+            100: "100 Fu", 110: "110 Fu"
+        }
+    },
+    ja: {
+        riichiSticks: "立直棒 🀄",
+        honba: "本場 🎴",
+        reset: "リセット",
+        rotate: "席替え(回転) ↻",
+        shuffle: "席替え(乱数) ⤮",
+        win: "和了",
+        draw: "流局",
+        riichi: "立直",
+        ron: "ロン",
+        tsumo: "ツモ",
+        whoWon: "和了者",
+        whoDealt: "放銃者",
+        handValue: "翻・符",
+        han: "翻",
+        fu: "符",
+        score: "点数:",
+        base: "素点:",
+        total: "合計:",
+        cancel: "キャンセル",
+        confirmWin: "決定",
+        confirmDraw: "決定",
+        drawTitle: "流局",
+        tenpaiSelect: "<strong>聴牌</strong>しているプレイヤーを選択:",
+        player: "プレイヤー",
+        winds: ["東", "南", "西", "北"],
+        alerts: {
+            resetConfirm: "点数を25000点にリセットしますか？",
+            riichiNotEnough: "点棒が足りません！",
+            riichiAlready: "既に立直しています！",
+            selectWinner: "和了者を選択してください",
+            selectLoser: "放銃者を選択してください",
+            shuffleConfirm: "席をシャッフルしますか？"
+        },
+        hanOptions: {
+            1: "1翻", 2: "2翻", 3: "3翻", 4: "4翻",
+            5: "5翻 (満貫)", 6: "6-7翻 (跳満)",
+            8: "8-10翻 (倍満)", 11: "11-12翻 (三倍満)",
+            13: "13翻+ (役満)"
+        },
+        fuOptions: {
+            20: "20符", 25: "25符 (七対子)", 30: "30符",
+            40: "40符", 50: "50符", 60: "60符",
+            70: "70符", 80: "80符", 90: "90符",
+            100: "100符", 110: "110符"
+        }
+    },
+    zh: {
+        riichiSticks: "立直棒 🀄",
+        honba: "本场 🎴",
+        reset: "重置",
+        rotate: "换位(旋转) ↻",
+        shuffle: "换位(随机) ⤮",
+        win: "和牌",
+        draw: "流局",
+        riichi: "立直",
+        ron: "荣和",
+        tsumo: "自摸",
+        whoWon: "和牌者",
+        whoDealt: "放炮者",
+        handValue: "番・符",
+        han: "番",
+        fu: "符",
+        score: "点数:",
+        base: "基本点:",
+        total: "合计:",
+        cancel: "取消",
+        confirmWin: "确定",
+        confirmDraw: "确定",
+        drawTitle: "流局",
+        tenpaiSelect: "选择<strong>听牌</strong>的玩家:",
+        player: "玩家",
+        winds: ["东", "南", "西", "北"],
+        alerts: {
+            resetConfirm: "重置所有分数为25000？",
+            riichiNotEnough: "点数不足！",
+            riichiAlready: "玩家已立直！",
+            selectWinner: "请选择和牌者",
+            selectLoser: "请选择放炮者",
+            shuffleConfirm: "随机分配座位？"
+        },
+        hanOptions: {
+            1: "1番", 2: "2番", 3: "3番", 4: "4番",
+            5: "5番 (满贯)", 6: "6-7番 (跳满)",
+            8: "8-10番 (倍满)", 11: "11-12番 (三倍满)",
+            13: "13番+ (役满)"
+        },
+        fuOptions: {
+            20: "20符", 25: "25符 (七对子)", 30: "30符",
+            40: "40符", 50: "50符", 60: "60符",
+            70: "70符", 80: "80符", 90: "90符",
+            100: "100符", 110: "110符"
+        }
+    }
+};
 
 // UI State for Win Modal
 let selectedWinner = null;
@@ -614,9 +759,64 @@ const SCORE_TABLES = {
 
 function init() {
     initPlayerNames();
+    updateLanguageUI();
     renderScores();
     updateDealerUI();
     updateHeader();
+}
+
+function changeLanguage(lang) {
+    currentLang = lang;
+    updateLanguageUI();
+    updateDealerUI(); // Update winds
+}
+
+function updateLanguageUI() {
+    const t = TRANSLATIONS[currentLang];
+    
+    // Update elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            if (key === 'tenpaiSelect') {
+                el.innerHTML = t[key];
+            } else {
+                el.textContent = t[key];
+            }
+        }
+    });
+
+    // Update Player Placeholders
+    for(let i=0; i<4; i++) {
+        const input = document.querySelector(`#p${i} .player-name`);
+        input.placeholder = `${t.player} ${i+1}`;
+    }
+
+    // Update Dropdowns
+    const hanSelect = document.getElementById('han-select');
+    const fuSelect = document.getElementById('fu-select');
+    
+    // Save current values
+    const currentHan = hanSelect.value;
+    const currentFu = fuSelect.value;
+
+    hanSelect.innerHTML = '';
+    for (const [val, text] of Object.entries(t.hanOptions)) {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = text;
+        hanSelect.appendChild(opt);
+    }
+    hanSelect.value = currentHan || "1";
+
+    fuSelect.innerHTML = '';
+    for (const [val, text] of Object.entries(t.fuOptions)) {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = text;
+        fuSelect.appendChild(opt);
+    }
+    fuSelect.value = currentFu || "30";
 }
 
 function initPlayerNames() {
@@ -653,7 +853,7 @@ function rotateSeats() {
 }
 
 function shuffleSeats() {
-    if(!confirm("Shuffle player seats?")) return;
+    if(!confirm(TRANSLATIONS[currentLang].alerts.shuffleConfirm)) return;
     
     const names = [];
     for(let i=0; i<4; i++) {
@@ -674,7 +874,7 @@ function shuffleSeats() {
 }
 
 function resetGame() {
-    if(!confirm("Reset all scores to 25000?")) return;
+    if(!confirm(TRANSLATIONS[currentLang].alerts.resetConfirm)) return;
     scores = [25000, 25000, 25000, 25000];
     playersRiichi = [false, false, false, false];
     riichiSticks = 0;
@@ -712,7 +912,7 @@ function updateHeader() {
 }
 
 function updateDealerUI() {
-    const winds = ['East', 'South', 'West', 'North'];
+    const winds = TRANSLATIONS[currentLang].winds;
     for (let i = 0; i < 4; i++) {
         const card = document.getElementById(`p${i}`);
         const windText = document.getElementById(`wind-${i}`);
@@ -731,11 +931,11 @@ function updateDealerUI() {
 
 function declareRiichi(playerIdx) {
     if (playersRiichi[playerIdx]) {
-        alert("Player has already declared Riichi!");
+        alert(TRANSLATIONS[currentLang].alerts.riichiAlready);
         return;
     }
     if (scores[playerIdx] < 1000) {
-        alert("Not enough points for Riichi!");
+        alert(TRANSLATIONS[currentLang].alerts.riichiNotEnough);
         return;
     }
     scores[playerIdx] -= 1000;
@@ -793,7 +993,7 @@ function renderPlayerSelects() {
 
     const playerNames = [];
     for(let i=0; i<4; i++) {
-        playerNames.push(document.querySelector(`#p${i} .player-name`).value || `Player ${i+1}`);
+        playerNames.push(document.querySelector(`#p${i} .player-name`).value || `${TRANSLATIONS[currentLang].player} ${i+1}`);
     }
 
     // Winner Buttons
@@ -881,7 +1081,7 @@ function updateCalculatedScore() {
 }
 
 function submitWin() {
-    if (selectedWinner === null) { alert("Select a winner"); return; }
+    if (selectedWinner === null) { alert(TRANSLATIONS[currentLang].alerts.selectWinner); return; }
     
     // Get Han/Fu
     const han = parseInt(document.getElementById('han-select').value);
@@ -896,7 +1096,7 @@ function submitWin() {
     const honbaPayment = 100 * honba;
 
     if (winType === 'ron') {
-        if (selectedLoser === null) { alert("Select who dealt in"); return; }
+        if (selectedLoser === null) { alert(TRANSLATIONS[currentLang].alerts.selectLoser); return; }
         
         // Ron Payment
         let pointValue = 0;
@@ -967,7 +1167,7 @@ function openDrawModal() {
     
     const playerNames = [];
     for(let i=0; i<4; i++) {
-        playerNames.push(document.querySelector(`#p${i} .player-name`).value || `Player ${i+1}`);
+        playerNames.push(document.querySelector(`#p${i} .player-name`).value || `${TRANSLATIONS[currentLang].player} ${i+1}`);
     }
 
     for(let i=0; i<4; i++) {

@@ -12,17 +12,22 @@
     <!-- Top Bar: Game Info -->
     <header class="game-info">
         <div class="info-item">
-            <span>Riichi Sticks 🀄</span>
+            <span data-i18n="riichiSticks">Riichi Sticks 🀄</span>
             <span id="pot-sticks" class="highlight">0</span>
         </div>
         <div class="info-item">
-            <span>Honba 🎴</span>
+            <span data-i18n="honba">Honba 🎴</span>
             <span id="honba-count" class="highlight">0</span>
         </div>
-        <div style="display: flex; gap: 5px;">
-            <button class="btn-reset" onclick="rotateSeats()">Rotate ↻</button>
-            <button class="btn-reset" onclick="shuffleSeats()">Shuffle ⤮</button>
-            <button class="btn-reset" onclick="resetGame()">Reset Game</button>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <select id="lang-select" onchange="changeLanguage(this.value)" style="padding: 5px; border-radius: 4px; background: #333; color: white; border: 1px solid #666;">
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="zh">中文</option>
+            </select>
+            <button class="btn-reset" onclick="rotateSeats()" data-i18n="rotate">Rotate ↻</button>
+            <button class="btn-reset" onclick="shuffleSeats()" data-i18n="shuffle">Shuffle ⤮</button>
+            <button class="btn-reset" onclick="resetGame()" data-i18n="reset">Reset Game</button>
         </div>
     </header>
 
@@ -31,7 +36,7 @@
         <div class="player-card" id="p0">
             <div class="player-header">
                 <span class="wind" id="wind-0">East</span>
-                <input type="text" class="player-name" value="Player 1">
+                <input type="text" class="player-name" placeholder="Player 1">
             </div>
             <div class="player-score" id="score-0">25000</div>
             <div class="player-actions">
@@ -41,7 +46,7 @@
         <div class="player-card" id="p1">
             <div class="player-header">
                 <span class="wind" id="wind-1">South</span>
-                <input type="text" class="player-name" value="Player 2">
+                <input type="text" class="player-name" placeholder="Player 2">
             </div>
             <div class="player-score" id="score-1">25000</div>
             <div class="player-actions">
@@ -51,7 +56,7 @@
         <div class="player-card" id="p3">
             <div class="player-header">
                 <span class="wind" id="wind-3">North</span>
-                <input type="text" class="player-name" value="Player 4">
+                <input type="text" class="player-name" placeholder="Player 4">
             </div>
             <div class="player-score" id="score-3">25000</div>
             <div class="player-actions">
@@ -61,7 +66,7 @@
         <div class="player-card" id="p2">
             <div class="player-header">
                 <span class="wind" id="wind-2">West</span>
-                <input type="text" class="player-name" value="Player 3">
+                <input type="text" class="player-name" placeholder="Player 3">
             </div>
             <div class="player-score" id="score-2">25000</div>
             <div class="player-actions">
@@ -72,39 +77,39 @@
 
     <!-- Main Action Bar -->
     <footer class="action-bar">
-        <button class="btn-action btn-win" onclick="openWinModal()">Win (Agari)</button>
-        <button class="btn-action btn-draw" onclick="openDrawModal()">Draw (Ryuukyoku)</button>
+        <button class="btn-action btn-win" onclick="openWinModal()" data-i18n="win">Win (Agari)</button>
+        <button class="btn-action btn-draw" onclick="openDrawModal()" data-i18n="draw">Draw (Ryuukyoku)</button>
     </footer>
 </div>
 
 <!-- Win Modal -->
 <div id="win-modal" class="modal hidden">
     <div class="modal-content">
-        <h2>Record Win</h2>
+        <h2 data-i18n="win">Record Win</h2>
         
         <div class="section">
-            <label>Who Won?</label>
+            <label data-i18n="whoWon">Who Won?</label>
             <div class="toggle-group" id="winner-select"></div>
         </div>
 
         <div class="section">
             <label>Win Type</label>
             <div class="toggle-group">
-                <button class="toggle-btn active" onclick="setWinType('ron')" id="btn-ron">Ron</button>
-                <button class="toggle-btn" onclick="setWinType('tsumo')" id="btn-tsumo">Tsumo</button>
+                <button class="toggle-btn active" onclick="setWinType('ron')" id="btn-ron" data-i18n="ron">Ron</button>
+                <button class="toggle-btn" onclick="setWinType('tsumo')" id="btn-tsumo" data-i18n="tsumo">Tsumo</button>
             </div>
         </div>
 
         <div class="section" id="loser-section">
-            <label>Who Dealt In? (Loser)</label>
+            <label data-i18n="whoDealt">Who Dealt In? (Loser)</label>
             <div class="toggle-group" id="loser-select"></div>
         </div>
 
         <div class="section">
-            <label>Hand Value</label>
+            <label data-i18n="handValue">Hand Value</label>
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <div style="flex: 1;">
-                    <label for="han-select" style="display: block; margin-bottom: 5px;">Han</label>
+                    <label for="han-select" style="display: block; margin-bottom: 5px;" data-i18n="han">Han</label>
                     <select id="han-select" onchange="updateCalculatedScore()" style="width: 100%; padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555;">
                         <option value="1">1 Han</option>
                         <option value="2">2 Han</option>
@@ -118,7 +123,7 @@
                     </select>
                 </div>
                 <div style="flex: 1;">
-                    <label for="fu-select" style="display: block; margin-bottom: 5px;">Fu</label>
+                    <label for="fu-select" style="display: block; margin-bottom: 5px;" data-i18n="fu">Fu</label>
                     <select id="fu-select" onchange="updateCalculatedScore()" style="width: 100%; padding: 10px; border-radius: 8px; background: #333; color: white; border: 1px solid #555;">
                         <option value="20">20 Fu</option>
                         <option value="25">25 Fu (7 Pairs)</option>
@@ -141,8 +146,8 @@
         </div>
 
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModals()">Cancel</button>
-            <button class="btn-confirm" onclick="submitWin()">Confirm Win</button>
+            <button class="btn-cancel" onclick="closeModals()" data-i18n="cancel">Cancel</button>
+            <button class="btn-confirm" onclick="submitWin()" data-i18n="confirmWin">Confirm Win</button>
         </div>
     </div>
 </div>
@@ -150,14 +155,14 @@
 <!-- Draw Modal -->
 <div id="draw-modal" class="modal hidden">
     <div class="modal-content">
-        <h2>Draw (Ryuukyoku)</h2>
-        <p>Select players who are <strong>Tenpai</strong>:</p>
+        <h2 data-i18n="drawTitle">Draw (Ryuukyoku)</h2>
+        <p data-i18n="tenpaiSelect">Select players who are <strong>Tenpai</strong>:</p>
         
         <div class="tenpai-selection" id="tenpai-select"></div>
 
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModals()">Cancel</button>
-            <button class="btn-confirm" onclick="submitDraw()">Confirm Draw</button>
+            <button class="btn-cancel" onclick="closeModals()" data-i18n="cancel">Cancel</button>
+            <button class="btn-confirm" onclick="submitDraw()" data-i18n="confirmDraw">Confirm Draw</button>
         </div>
     </div>
 </div>
